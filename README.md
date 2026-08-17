@@ -66,8 +66,8 @@ jolloin näyttö siirtyy säädöksen ensimmäisestä sallitusta muodosta toisee
 kontrasti pysyy samana. Hinnaston omia värejä ei muuteta miksikään muuksi
 (aiempi neonefekti on poistettu kokonaan).
 
-Koristeet saavat olla värillisiä: lentävät emojit, konfetti ja taksi eivät ole
-osa hinnastoa vaan liikkuvat sen kaistoilla. Kun muokkaat itse hinnastoa,
+Koristeet ovat värillisiä: lentävät emojit ja konfetti eivät ole osa
+hinnastoa vaan liikkuvat sen kaistoilla. Kun muokkaat itse hinnastoa,
 käytä aina `var(--dark)`- ja `var(--bright)`-arvoja.
 
 ## Kädenpuristuskuvake
@@ -104,9 +104,9 @@ automaattisesti lakanan kokoiseksi.
 
 Kaikki yllätykset arvotaan satunnaisesti eivätkä ne koskaan peitä hintoja:
 
-* **Lentävät kuviot** — värillisiä emojeja (🔥💸🎧👑🏆) ja keltaisia
-  siluetteja (salama, tähti, kruunu, nuotti, kuulokkeet, mankka, euro, taksi)
-  otsikkopalkin tai ekvalisaattorin poikki.
+* **Lentävät kuviot** — värillisiä emojeja (🔥💸🎧👑🏆🪩🚕🍕⚡…) lentää
+  otsikkopalkin tai ekvalisaattorin poikki. Lista on `EMOJI`-muuttujassa,
+  ja siihen saa lisätä mitä tahansa.
 * **Leimat** — "MENOKS!", "SKRRT!", "KYYTIIN!" ponnahtavat alareunaan.
 * **Flip** — musta ja keltainen vaihtavat paikkaa. Kontrasti pysyy samana.
 * **Strobo** — sama vaihto nopeasti tahdissa.
