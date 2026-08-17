@@ -54,51 +54,58 @@ Napautus vaihtaa tilaa, valinta muistetaan seuraavallakin käynnistyksellä:
 | **RAUHA** | Hitaampi syke, yllätys 25–50 s välein. | vähemmän |
 | **STILL** | Kaikki animaatiot pois, pelkkä hinnasto. | vähiten |
 
-## Värit — vain musta ja keltainen
+## Värit
 
 Säädös: *"Hinnasto tulee ilmoittaa joko mustalla pohjalla keltaisella värillä
 tai keltaisella pohjalla mustalla värillä."*
 
-Näytöllä on vain kaksi väriä, `#000000` ja `#FFF75E`. Ne on määritelty
-muuttujina `--dark` ja `--bright`, ja ainoa värillinen efekti (**flip**)
-vaihtaa nämä kaksi keskenään — jolloin näyttö siirtyy säädöksen
-ensimmäisestä sallitusta muodosta toiseen. Mitään kolmatta väriä ei ole:
-lentävät kuviot ovat yksivärisiä SVG-siluetteja (ei värillisiä emojeja)
-eikä sivulla ole yhtään liukuväriä tai läpikuultavaa valokeilaa.
+Itse hinnasto — teksti, palkit ja tausta — on aina joko keltaista mustalla tai
+mustaa keltaisella. Käytössä on vain kaksi väriä, `#000000` ja `#FFF75E`,
+muuttujina `--dark` ja `--bright`. **Flip**-efekti vaihtaa nämä keskenään,
+jolloin näyttö siirtyy säädöksen ensimmäisestä sallitusta muodosta toiseen;
+kontrasti pysyy samana. Hinnaston omia värejä ei muuteta miksikään muuksi
+(aiempi neonefekti on poistettu kokonaan).
 
-Muutos kannattaa tehdä samalla tavalla: käytä aina `var(--dark)`- ja
-`var(--bright)`-arvoja, älä kirjoita värikoodeja suoraan.
+Koristeet saavat olla värillisiä: lentävät emojit, konfetti ja taksi eivät ole
+osa hinnastoa vaan liikkuvat sen kaistoilla. Kun muokkaat itse hinnastoa,
+käytä aina `var(--dark)`- ja `var(--bright)`-arvoja.
+
+Hintarivin kädenpuristus on värillinen emoji, kuten alkuperäisessäkin
+hinnastossa. Jos haluat sen tilalle yksivärisen keltaisen kuittausmerkin,
+`index.html`-tiedostossa on valmis vaihtoehto kommenttina sen vieressä.
 
 ## Staattiset osat
 
 Otsikko **Hinnasto** ja esimerkkimatkan hinta **39,00 €** eivät liiku eivätkä
 sykähtele — niillä ei ole omaa animaatiota lainkaan.
 
-## Mainoslakanat
+## Mainoslakana
 
-Hintarivien oikealla puolella on kolme laattaa, joiden tekstit vaihtuvat
-vuorotellen noin viiden sekunnin välein. Sama teksti ei ole koskaan esillä
-kahdessa laatassa yhtä aikaa. Tekstit ovat taulukkona `index.html`-tiedoston
+Hintarivien oikealla puolella näkyy **yksi lakana kerrallaan**: teksti on
+esillä noin 6 sekuntia, katoaa kokonaan noin 2,5 sekunniksi, ja sitten tulee
+näkyviin seuraava teksti (RAUHA-tilassa 12 s / 5 s). Ilme vaihtelee täytetyn
+ja ääriviivalaatan välillä. Tekstit ovat `index.html`-tiedoston
 `BANNERS`-muuttujassa:
 
     BLOCKFEST 2026 · GO TAMPERE · BLOCKFEST TAMPERE
     BLOCKFEST = LEGIT · MÄKKÄRIN KAUTTA KÄMPILLE
 
 Listaan voi lisätä tekstejä vapaasti — pitkä teksti rivittyy ja pienenee
-automaattisesti laatan kokoiseksi.
+automaattisesti lakanan kokoiseksi.
 
 ## Efektit
 
 Kaikki yllätykset arvotaan satunnaisesti eivätkä ne koskaan peitä hintoja:
 
-* **Kuviot** — salama, tähti, kruunu, nuotti, kuulokkeet, mankka ja euro
-  lentävät otsikkopalkin tai ekvalisaattorin poikki.
+* **Lentävät kuviot** — värillisiä emojeja (🔥💸🎧👑🏆) ja keltaisia
+  siluetteja (salama, tähti, kruunu, nuotti, kuulokkeet, mankka, euro, taksi)
+  otsikkopalkin tai ekvalisaattorin poikki.
 * **Leimat** — "MENOKS!", "SKRRT!", "KYYTIIN!" ponnahtavat alareunaan.
 * **Flip** — musta ja keltainen vaihtavat paikkaa. Kontrasti pysyy samana.
 * **Strobo** — sama vaihto nopeasti tahdissa.
 * **Scratch** — koko kyltti nytkähtää kuin levy soittimella.
 * **Boom** — reunat välähtävät ja kyltti pomppaa bassoiskusta.
-* **Konfetti** ja **taksi**, joka ajaa ekvalisaattorin poikki.
+* **Konfetti** värillisinä lastuina ja **taksi**, joka ajaa ekvalisaattorin poikki.
 
 Efektejä voi kokeilla Safarin konsolista: `__fx.confetti()`, `__fx.flip()` jne.
 
