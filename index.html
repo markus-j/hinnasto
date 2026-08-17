@@ -119,7 +119,6 @@ body{
 .a-v1{grid-area:v1}.a-v2{grid-area:v2}.a-v3{grid-area:v3}
 
 .ico{width:min(8vh,8.2vw);height:min(8vh,8.2vw);display:block;color:var(--bright)}
-.ico-emoji{font-size:min(6.6vh,6.8vw);line-height:1}
 
 /* --- Mainoslakana hintarivien oikealla puolella ---
    Yksi lakana kerrallaan: näkyy hetken, katoaa hetkeksi kokonaan,
@@ -340,25 +339,15 @@ body.sleep *,body.sleep *::before,body.sleep *::after{animation-play-state:pause
       <div class="lbl a-l3">+ Matka</div>
       <div class="val a-v3">3&nbsp;€/km</div>
 
-      <!-- ==================================================================
-           KÄDENPURISTUS = Traficomin virallinen kuvake.
-           Alla on väliaikainen paikanpitäjä. Korvaa se Traficomin
-           kuvapankin SVG:llä (kuvapankki.traficom.fi, galleria 236324
-           keltainen / 236325 musta) näin:
-
-             1. Avaa ladattu .svg tekstieditorissa.
-             2. Kopioi <svg>-elementin SISÄLTÖ (path/g-elementit) tämän
-                div-elementin sisään olevan <svg>:n sisälle ja kopioi
-                viewBox-arvo samalla.
-             3. Poista kiinteät värit (fill="#FFF75E" tms.) — kun väri on
-                currentColor, sama tiedosto riittää molempiin: kuvake on
-                keltainen mustalla pohjalla ja musta keltaisella, eli se
-                kääntyy oikein myös flip-efektin aikana.
-
-           Yhtä tiedostoa ei siis tarvitse ladata kahtena versiona.
-           ================================================================== -->
+      <!-- Traficomin virallinen kädenpuristuskuvake (kuvapankki.traficom.fi).
+           Väri tulee currentColor-arvosta, joten sama kuvake toimii
+           molemmissa sallituissa muodoissa: keltainen mustalla pohjalla ja
+           musta keltaisella. Erillistä mustaa tiedostoa ei tarvita. -->
       <div class="a-i4">
-        <span class="ico-emoji" id="ico-sovittu">🤝</span>
+        <svg class="ico" id="ico-sovittu" viewBox="0 0 192.2198 190.37536"
+             fill="currentColor" fill-rule="evenodd" aria-hidden="true">
+          <path d="M117.90938,130.97986c-4.59269-4.22176-11.078,2.22687-6.84315,6.737l5.58357,5.94664c4.26763,4.54548,11.18415-1.82712,7.05809-6.4958l-5.79851-6.18779ZM54.41147,116.3787c1.81793-1.94769,9.75288-5.92039,12.54332-7.48536,4.14573-2.32519,8.35964-4.58481,12.47521-6.95585a1.76366,1.76366,0,0,1,1.7537,3.06048L57.32251,118.77074c-1.01054,7.10133,4.92953,11.618,11.1265,7.88121l17.4021-10.49474a1.76925,1.76925,0,0,1,1.82053,3.03425c-6.33718,3.822-12.2576,8.00966-18.929,11.29427-1.0682,7.14852,4.89415,11.71237,11.12125,7.952l17.39161-10.50127a1.76917,1.76917,0,0,1,1.81924,3.03424L84.041,140.04854c-.928,5.83,3.84818,9.593,8.94415,6.51941l14.05067-8.47889c-2.27274-6.03837.45349-10.65069,6.72648-12.00335-1.23992-3.73153-1.01842-6.77759,1.91491-9.71224a9.04285,9.04285,0,0,1,4.56649-2.2164c-4.611-9.97045,5.95972-17.10718,13.81994-9.60739,2.46151-6.31622,9.40423-9.09622,14.31148-3.86391l3.877,4.13c5.97677-6.89161,11.99546-13.74654,17.91064-20.69061L146.99369,50.0248l-6.408,10.30206a1.72566,1.72566,0,0,1-1.02628.76414L121.578,66.10309l1.11538,1.06429c3.10766,2.96346,6.218,5.94008,9.25614,8.97563,7.56138,7.5627-4.85743,18.06268-17.02594,8.32685-10.48423-8.7371-13.04927-12.66133-25.56639-5.16284C73.75862,88.65361,58.45365,98.514,43.17882,108.37694c-1.24255,7.408,4.82859,11.70057,11.23265,8.00176Zm70.43411,2.8036c-4.04875-4.30957-11.31654,1.9726-7.01877,6.54691l11.18285,11.905a4.79846,4.79846,0,0,0,6.99123-6.57444L124.84558,119.1823ZM117.1767,81.75278c7.45784,6.26121,16.94991,1.57545,12.26809-3.105-6.85887-6.86021-13.96151-13.50147-21.034-20.14278L60.7775,60.9088a1.73459,1.73459,0,0,1-.772-.13892L41.91792,53.01451,22.057,87.40843l19.74693,17.65635c14.83968-9.53266,29.63482-19.106,44.75368-28.1996,3.7538-2.257,9.11062-5.54029,13.6561-5.3096,5.68451.28835,12.816,6.71336,16.963,10.1972ZM145.7918,103.104c-4.28467-4.5586-11.23658,1.89654-6.99258,6.57442l7.59286,8.07912c4.48126,4.48126,11.24707-2.0486,6.97422-6.5954l-7.5745-8.05814Zm-14.94324,3.27278c-4.31614-4.57957-11.30867,1.95425-6.99517,6.57444q9.13224,9.77517,18.3117,19.50184c4.30564,4.57826,11.18808-1.83234,7.07118-6.49844q-9.18922-9.79286-18.38771-19.57784Z"/>
+        </svg>
       </div>
       <div class="banners" aria-hidden="true">
         <div class="banner solid" id="banner"></div>

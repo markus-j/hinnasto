@@ -72,18 +72,14 @@ käytä aina `var(--dark)`- ja `var(--bright)`-arvoja.
 
 ## Kädenpuristuskuvake
 
-Rivin "Kiinteä hinta sovitaan etukäteen" kuvakkeen kuuluu olla **Traficomin
-virallinen kädenpuristus** ([kuvapankki.traficom.fi](https://kuvapankki.traficom.fi/fi/search?gallery=236324)
-— keltainen galleria 236324, musta 236325). Kuvapankki on tällä hetkellä
-paikalla vain väliaikainen emoji-paikanpitäjä, koska tiedostoa ei päästy
-lataamaan.
+Rivin "Kiinteä hinta sovitaan etukäteen" kuvake on **Traficomin virallinen
+kädenpuristus** ([kuvapankki.traficom.fi](https://kuvapankki.traficom.fi/fi/search?gallery=236324)),
+upotettuna suoraan `index.html`-tiedostoon (`#ico-sovittu`).
 
-Vaihto on yhden liitoksen työ: `index.html`-tiedostossa on iso kommenttilohko
-otsikolla `KÄDENPURISTUS`, ja sen alla `#ico-sovittu`. Kopioi Traficomin
-SVG:n sisältö sinne ja **poista kiinteät värit**, jolloin väri tulee
-`currentColor`-arvosta. Silloin riittää yksi tiedosto molempiin muotoihin:
-kuvake on keltainen mustalla pohjalla ja kääntyy mustaksi keltaisella
-pohjalla flip-efektin aikana — täsmälleen kuten muutkin hinnaston kuvakkeet.
+Kuvake piirretään `currentColor`-värillä, joten yksi ja sama polku riittää
+molempiin sallittuihin muotoihin: se on keltainen mustalla pohjalla ja
+kääntyy mustaksi keltaisella pohjalla flip-efektin aikana. Erillistä mustaa
+tiedostoa (galleria 236325) ei siis tarvita.
 
 ## Staattiset osat
 
