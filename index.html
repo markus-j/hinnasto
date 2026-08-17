@@ -340,13 +340,25 @@ body.sleep *,body.sleep *::before,body.sleep *::after{animation-play-state:pause
       <div class="lbl a-l3">+ Matka</div>
       <div class="val a-v3">3&nbsp;€/km</div>
 
+      <!-- ==================================================================
+           KÄDENPURISTUS = Traficomin virallinen kuvake.
+           Alla on väliaikainen paikanpitäjä. Korvaa se Traficomin
+           kuvapankin SVG:llä (kuvapankki.traficom.fi, galleria 236324
+           keltainen / 236325 musta) näin:
+
+             1. Avaa ladattu .svg tekstieditorissa.
+             2. Kopioi <svg>-elementin SISÄLTÖ (path/g-elementit) tämän
+                div-elementin sisään olevan <svg>:n sisälle ja kopioi
+                viewBox-arvo samalla.
+             3. Poista kiinteät värit (fill="#FFF75E" tms.) — kun väri on
+                currentColor, sama tiedosto riittää molempiin: kuvake on
+                keltainen mustalla pohjalla ja musta keltaisella, eli se
+                kääntyy oikein myös flip-efektin aikana.
+
+           Yhtä tiedostoa ei siis tarvitse ladata kahtena versiona.
+           ================================================================== -->
       <div class="a-i4">
-        <!-- Alkuperäisen hinnaston kädenpuristus. Halutessasi tilalle saa
-             yksivärisen kuittausmerkin vaihtamalla tämän div-elementin
-             sisällöksi: <svg class="ico" viewBox="0 0 100 100" fill="none"
-             stroke="currentColor" stroke-width="11" stroke-linecap="round">
-             <circle cx="50" cy="50" r="38"/><path d="M30 52 L44 66 L71 36"/></svg> -->
-        <span class="ico-emoji">🤝</span>
+        <span class="ico-emoji" id="ico-sovittu">🤝</span>
       </div>
       <div class="banners" aria-hidden="true">
         <div class="banner solid" id="banner"></div>

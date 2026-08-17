@@ -70,9 +70,20 @@ Koristeet saavat olla värillisiä: lentävät emojit, konfetti ja taksi eivät 
 osa hinnastoa vaan liikkuvat sen kaistoilla. Kun muokkaat itse hinnastoa,
 käytä aina `var(--dark)`- ja `var(--bright)`-arvoja.
 
-Hintarivin kädenpuristus on värillinen emoji, kuten alkuperäisessäkin
-hinnastossa. Jos haluat sen tilalle yksivärisen keltaisen kuittausmerkin,
-`index.html`-tiedostossa on valmis vaihtoehto kommenttina sen vieressä.
+## Kädenpuristuskuvake
+
+Rivin "Kiinteä hinta sovitaan etukäteen" kuvakkeen kuuluu olla **Traficomin
+virallinen kädenpuristus** ([kuvapankki.traficom.fi](https://kuvapankki.traficom.fi/fi/search?gallery=236324)
+— keltainen galleria 236324, musta 236325). Kuvapankki on tällä hetkellä
+paikalla vain väliaikainen emoji-paikanpitäjä, koska tiedostoa ei päästy
+lataamaan.
+
+Vaihto on yhden liitoksen työ: `index.html`-tiedostossa on iso kommenttilohko
+otsikolla `KÄDENPURISTUS`, ja sen alla `#ico-sovittu`. Kopioi Traficomin
+SVG:n sisältö sinne ja **poista kiinteät värit**, jolloin väri tulee
+`currentColor`-arvosta. Silloin riittää yksi tiedosto molempiin muotoihin:
+kuvake on keltainen mustalla pohjalla ja kääntyy mustaksi keltaisella
+pohjalla flip-efektin aikana — täsmälleen kuten muutkin hinnaston kuvakkeet.
 
 ## Staattiset osat
 
