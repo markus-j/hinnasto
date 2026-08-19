@@ -1,8 +1,9 @@
 /* Offline-välimuisti kotivalikosta avattavalle versiolle.
    Tarvitaan vain jos sivu tarjoillaan https-osoitteesta (esim. GitHub Pages).
    Paikallisesti Files-sovelluksesta avattuna index.html toimii jo sellaisenaan. */
-var CACHE = 'hinnasto-v1';
-var FILES = ['./', './index.html', './manifest.json', './icon.svg'];
+var CACHE = 'hinnasto-v2';
+var FILES = ['./', './index.html', './versio-lentavat.html',
+             './manifest.json', './icon.svg'];
 
 self.addEventListener('install', function(e){
   self.skipWaiting();

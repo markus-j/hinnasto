@@ -14,9 +14,9 @@
 /* ------------------------------------------------------------------
    Taksin takaikkunan hinnastonäyttö.
    Suunnitteluperiaatteet:
-   - Hinnat luettavissa 100 % ajasta: isot emojit pysyvät oikeassa
-     alanurkassa lasketulla alueella (zone()), leimat alareunassa, ja
-     väriefektit vaihtavat vain mustan ja keltaisen paikkaa.
+   - Hinnat luettavissa 100 % ajasta: efektit liikkuvat vain hinnattomilla
+     kaistoilla (otsikkopalkki + ekvalisaattoririvi), pysyvät reunoissa tai
+     vaihtavat pelkkiä värejä niin, että kontrasti säilyy ennallaan.
    - Akunsäästö: animoidaan vain transform ja opacity (GPU),
      ei JS-ruutusilmukkaa, ei canvasia, ei animoitua blur/shadow-efektiä.
      Jatkuvia animaatioita on kourallinen; "yllätykset" ajetaan
@@ -150,6 +150,14 @@ body{
        padding:0 3.5%;gap:.35em;font-weight:700}
 .legal p{width:100%;font-size:min(3.2vh,3.3vw);line-height:1.15;white-space:nowrap}
 
+/* --- Juokseva valoreunus (4 kevyttä transform-animaatiota) --- */
+.chase{position:absolute;background:var(--bright);border-radius:99px;opacity:.9;
+       box-shadow:0 0 1.4vmin var(--bright);will-change:transform;pointer-events:none;z-index:3}
+.chase.t{top:0;left:0;height:.5vmin;width:22%;animation:runx 5s linear infinite}
+.chase.b{bottom:0;right:0;height:.5vmin;width:22%;animation:runx 5s linear infinite reverse}
+.chase.l{bottom:0;left:0;width:.5vmin;height:22%;animation:runy 5s linear infinite}
+.chase.r{top:0;right:0;width:.5vmin;height:22%;animation:runy 5s linear infinite reverse}
+
 /* ============ EKVALISAATTORI (kyltin alla, ei peitä mitään) ============ */
 .eq{position:relative;z-index:2;height:7.5vh;min-height:34px;display:flex;align-items:flex-end;
     justify-content:center;gap:1.1vmin;padding:0 1vmin}
@@ -161,7 +169,10 @@ body{
   will-change:transform;
 }
 
-/* ============ ETUKERROS ============ */
+/* ============ ETUKERROS ============
+   Kaikki lentävät efektit kulkevat kahdella "kaistalla":
+   otsikkopalkissa ja ekvalisaattorirovissa. Kummallakaan ei ole
+   yhtään hintaa — hinnat eivät siis peity koskaan. */
 .front{position:fixed;inset:0;z-index:5;pointer-events:none;overflow:hidden}
 
 .stamp{
@@ -177,18 +188,10 @@ body{
 .stamp.left{left:3vw}
 .stamp.right{right:3vw;transform:scale(0) rotate(6deg);animation-name:stampR}
 
-/* --- Nurkkaemojit ---
-   Isoja emojeja oikeassa alanurkassa: nousevat alhaalta, viipyvät
-   paikallaan ja poistuvat oikealle tai alas. Laatikon paikka lasketaan
-   ajossa (zone()) niin, ettei se osu yhteenkään tekstiin tai hintaan. */
-.corner{position:absolute;display:flex;align-items:flex-end;justify-content:center;
-        pointer-events:none;overflow:visible}
-.corner span{
-  display:block;line-height:1;
-  filter:drop-shadow(0 .4vmin 1.4vmin rgba(0,0,0,.6));
-  will-change:transform,opacity;
-}
-
+/* Lentävät kuviot: värillisiä emojeja. Nämä ovat koristeita kyltin
+   kaistoilla — eivät osa hinnastoa, joten värit ovat vapaat. */
+.sticker{position:absolute;line-height:1;will-change:transform;
+         filter:drop-shadow(0 0 1.2vmin rgba(0,0,0,.55))}
 /* Konfetti: pieniä lastuja, jotka eivät haittaa luettavuutta. */
 .confetti{position:absolute;top:-6vh;width:1.2vmin;height:2.2vmin;border-radius:.3vmin;
           will-change:transform,opacity}
@@ -207,6 +210,8 @@ body{
 .toast.on{opacity:.96}
 
 /* ============ ANIMAATIOT (vain transform / opacity) ============ */
+@keyframes runx{from{transform:translateX(-120%)}to{transform:translateX(560%)}}
+@keyframes runy{from{transform:translateY(120%)}to{transform:translateY(-560%)}}
 @keyframes eq{
   0%{transform:scaleY(.14)}
   100%{transform:scaleY(1)}
@@ -228,22 +233,17 @@ body{
 @keyframes pulse{
   0%{opacity:0}10%{opacity:.95}45%{opacity:.35}100%{opacity:0}
 }
-/* Nouse alhaalta -> viivy -> poistu oikealle. Keskiosa on liikkumaton,
-   joten emoji seisoo paikallaan luettavan pitkään. */
-@keyframes cornerRight{
-  0%  {transform:translate3d(0,135%,0) rotate(-8deg);opacity:0}
-  9%  {opacity:1}
-  22% {transform:translate3d(0,0,0) rotate(0deg)}
-  68% {transform:translate3d(0,0,0) rotate(0deg)}
-  100%{transform:translate3d(210%,0,0) rotate(14deg);opacity:1}
+@keyframes flyR{
+  from{transform:translate3d(-30vw,0,0) rotate(-25deg)}
+  to{transform:translate3d(125vw,0,0) rotate(25deg)}
 }
-/* Sama, mutta poistuu alas. */
-@keyframes cornerDown{
-  0%  {transform:translate3d(0,135%,0) rotate(7deg);opacity:0}
-  9%  {opacity:1}
-  22% {transform:translate3d(0,0,0) rotate(0deg)}
-  68% {transform:translate3d(0,0,0) rotate(0deg)}
-  100%{transform:translate3d(0,145%,0) rotate(-10deg);opacity:1}
+@keyframes flyL{
+  from{transform:translate3d(125vw,0,0) rotate(25deg)}
+  to{transform:translate3d(-30vw,0,0) rotate(-25deg)}
+}
+@keyframes drive{
+  from{transform:translate3d(-25vw,0,0) scaleX(-1)}
+  to{transform:translate3d(120vw,0,0) scaleX(-1)}
 }
 @keyframes fall{
   0%{transform:translate3d(0,0,0) rotate(0);opacity:1}
@@ -272,6 +272,7 @@ body.flip{--dark:#FFF75E;--bright:#000000}
 /* ============ TILAT ============ */
 /* RAUHA: hitaampi syke, ekvalisaattori vaimeampi. */
 body.chill{--beat:1.0s}
+body.chill .chase{animation-duration:9s}
 
 /* STILL: kaikki animaatiot pois — maksimi akunkesto. */
 body.still *,body.still *::before,body.still *::after{
@@ -282,6 +283,10 @@ body.still .front{display:none}
 
 /* Taustavälilehti / näyttö pois: pysäytetään kaikki. */
 body.sleep *,body.sleep *::before,body.sleep *::after{animation-play-state:paused!important}
+
+@media (prefers-reduced-motion:reduce){
+  .chase{animation:none}
+}
 
 /* Pystyasento: kavennetaan hieman, jotta pitkät rivit mahtuvat. */
 @media (orientation:portrait){
@@ -355,6 +360,8 @@ body.sleep *,body.sleep *::before,body.sleep *::after{animation-play-state:pause
       <p>Puh. 045 3133149, taksi@markusjaakola.fi, markusjaakola.fi</p>
     </div>
 
+    <span class="chase t"></span><span class="chase r"></span>
+    <span class="chase b"></span><span class="chase l"></span>
   </div>
 </div>
 
@@ -418,10 +425,25 @@ function fit(){
   });
 }
 
+/* Kaistat, joilla lentävät efektit saavat liikkua: otsikkopalkki ja
+   ekvalisaattoririvi. Molemmat ovat hinnattomia alueita. */
+var LANES = [];
+function lanes(){
+  LANES = [];
+  [['.titlebar',.78],['.eq',.94]].forEach(function(pair){
+    var el = document.querySelector(pair[0]);
+    if(!el) return;
+    var r = el.getBoundingClientRect();
+    if(r.height < 20) return;
+    var size = r.height * pair[1];
+    LANES.push({ top: r.top + (r.height - size)/2, size: size });
+  });
+}
+
 var fitTimer;
 function fitSoon(){
   clearTimeout(fitTimer);
-  fitTimer = setTimeout(function(){ fit(); zone(); fitBanner(bannerEl); }, 150);
+  fitTimer = setTimeout(function(){ fit(); lanes(); fitBanner(bannerEl); }, 150);
 }
 window.addEventListener('resize', fitSoon);
 window.addEventListener('orientationchange', fitSoon);
@@ -445,7 +467,6 @@ function applyMode(){
   try{ localStorage.setItem('hinnasto-mode', mode); }catch(e){}
   schedule();
   bannerCycle();
-  cornerLoop();
 }
 
 function toast(txt,ms){
@@ -481,9 +502,33 @@ var EMOJI = ['🔥','💸','🎧','🎤','👟','🕶️','👑','⚡','💥','�
 var WORDS = ['MENOKS!','KYYTIIN!','TAKSI!','VAPAA!','SKRRT!','BOOM!','TILAA NYT',
              'YÖ ON NUORI','KORTTI KÄY','HYPPÄÄ KYYTIIN','LEGIT','ISTU ALAS'];
 
+/* Värillinen emoji annetulle kaistalle. */
+function emo(chr, lane){
+  var d = document.createElement('div');
+  d.className = 'sticker';
+  d.style.top = lane.top.toFixed(1)+'px';
+  d.style.fontSize = lane.size.toFixed(1)+'px';
+  d.textContent = chr;
+  return d;
+}
+
 
 
 var FX = {
+  /* Iso kuvio lentää kaistaa pitkin ruudun poikki */
+  sticker:function(){
+    if(!LANES.length) lanes();
+    var n = 1 + (Math.random()*2|0), i;
+    for(i=0;i<n;i++){
+      var lane = pick(LANES);
+      if(!lane) return;
+      var s = emo(pick(EMOJI), lane);
+      var dur = rnd(2.6,4.2).toFixed(2);
+      s.style.animation = pick(['flyR','flyL'])+' '+dur+'s linear '+(i*0.35).toFixed(2)+'s both';
+      temp(s, front, (dur*1000|0) + 1200 + i*350);
+    }
+  },
+
   /* Konfettisade: pieniä lastuja, jotka eivät peitä numeroita */
   confetti:function(){
     for(var i=0;i<18;i++){
@@ -520,6 +565,16 @@ var FX = {
     setTimeout(function(){ body.classList.remove('fx-scratch'); }, 800);
   },
 
+  /* Taksi ajaa ekvalisaattorin poikki */
+  taxi:function(){
+    if(!LANES.length) lanes();
+    var lane = LANES[LANES.length-1];
+    if(!lane) return;
+    var t = emo('🚕', lane);
+    t.style.animation='drive 4.2s linear both';
+    temp(t, front, 4800);
+  },
+
   /* Leima ponnahtaa alareunan vapaaseen tilaan */
   stamp:function(){
     var s=document.createElement('div');
@@ -537,116 +592,12 @@ var FX = {
   }
 };
 
-window.__fx = FX;
-window.__corner = cornerShow;   /* nurkkaemojin esikatselu konsolista */
-window.__zone = function(){ return ZONE; };   /* efektien esikatselu konsolista: __fx.confetti() */
+window.__fx = FX;   /* efektien esikatselu konsolista: __fx.confetti() */
 
 /* Painotettu arvonta: kevyet efektit useammin, raskaammat harvemmin. */
-var POOL = ['stamp','stamp','boom','boom','flip','flip',
-            'strobe','scratch','confetti'];
+var POOL = ['sticker','sticker','sticker','stamp','stamp','boom','boom',
+            'flip','flip','strobe','scratch','taxi','confetti'];
 var last = '';
-
-/* ---------- Nurkkaemojit ----------
-   Alue lasketaan oikeista elementeistä: yläreuna on hintarivien
-   alapuolella ja vasen reuna alatunnisteen pisimmän tekstin oikealla
-   puolella. Niinpä emojit eivät voi peittää hintoja eivätkä tekstejä,
-   vaikka ne saavat mennä ekvalisaattorin ja leimojen päälle.        */
-var COMBOS = [
-  ['🍕','🥤'], ['🍔','🍟'], ['🎧','🔥'], ['👑','💸'], ['🕺','🪩'],
-  ['😎','💯'], ['🎤','🎶'], ['🤩','🎉'], ['🥳','🎂'], ['⚡','🏆'],
-  ['🎫','🙌'], ['🚕','💨'], ['💃','🕶️'], ['🍦','☀️'], ['🐐','🔥']
-];
-var ZONE = null, cornerTimer = null;
-
-/* Tekstin todellinen oikea reuna. Alatunnisteen rivit ovat koko palkin
-   levyisiä elementtejä, joten pelkkä elementin reuna kertoisi väärin —
-   Range mittaa itse merkkijonon. */
-function textRight(el){
-  var rng = document.createRange();
-  rng.selectNodeContents(el);
-  var r = rng.getBoundingClientRect();
-  return r.width ? r.right : el.getBoundingClientRect().left;
-}
-
-function zone(){
-  var rows  = document.querySelector('.rows').getBoundingClientRect();
-  var right = 0;
-  [].forEach.call(document.querySelectorAll('.legal p'), function(p){
-    right = Math.max(right, textRight(p));
-  });
-  var left = Math.max(right + innerWidth*0.02, innerWidth*0.58);
-  var z = { left:left, top:rows.bottom, w:innerWidth-left, h:innerHeight-rows.bottom };
-
-  /* Pystyasennossa alatunnisteen rivit vievät lähes koko leveyden, jolloin
-     ylläolevasta ei jää käyttökelpoista aluetta. Silloin siirrytään kyltin
-     alapuolelle ekvalisaattorin päälle — sen päälle saa mennä. */
-  if(z.w < innerWidth*0.16){
-    var sign = document.querySelector('.sign').getBoundingClientRect();
-    z = { left:innerWidth*0.5, top:sign.bottom,
-          w:innerWidth*0.5, h:innerHeight-sign.bottom };
-  }
-  ZONE = z;
-}
-
-/* Yksi emojiyhdistelmä nurkkaan. */
-function cornerShow(){
-  if(!live()) return;
-  if(!ZONE) zone();
-  if(ZONE.w < 60 || ZONE.h < 60) return;
-
-  var combo = pick(COMBOS);
-  var gap   = ZONE.w * 0.05;
-  var pad   = ZONE.h * 0.08;      /* emoji ei jää kiinni ruudun alareunaan */
-  var size  = Math.min((ZONE.h - pad) * 0.94,
-                       (ZONE.w - gap*(combo.length-1)) / combo.length * 0.94);
-  var dur   = 12;
-
-  var box = document.createElement('div');
-  box.className = 'corner';
-  box.style.left   = ZONE.left.toFixed(1)+'px';
-  box.style.top    = ZONE.top.toFixed(1)+'px';
-  box.style.width  = ZONE.w.toFixed(1)+'px';
-  box.style.height = ZONE.h.toFixed(1)+'px';
-  box.style.gap    = gap.toFixed(1)+'px';
-  box.style.paddingBottom = pad.toFixed(1)+'px';
-
-  var spans = combo.map(function(chr){
-    var s = document.createElement('span');
-    s.textContent = chr;
-    s.style.fontSize = size.toFixed(1)+'px';
-    box.appendChild(s);
-    return s;
-  });
-  front.appendChild(box);
-
-  /* Emojin piirtoala on isompi kuin sen fonttikoko (eri fonteissa eri
-     verran), joten mitataan todellinen koko ja kutistetaan tarvittaessa.
-     Näin ryhmä pysyy alueellaan eikä yllä tekstien päälle. */
-  var wide = 0, tall = 0;
-  spans.forEach(function(s){
-    var r = s.getBoundingClientRect();
-    wide += r.width; tall = Math.max(tall, r.height);
-  });
-  wide += gap * (spans.length - 1);
-  var k = Math.min(1, (ZONE.w*0.98)/wide, (ZONE.h - pad)/tall);
-  if(k < 1) spans.forEach(function(s){ s.style.fontSize = (size*k).toFixed(1)+'px'; });
-
-  spans.forEach(function(s,i){
-    s.style.animation = pick(['cornerRight','cornerDown'])+' '+dur+'s '+
-                        'cubic-bezier(.33,0,.2,1) '+(i*0.8).toFixed(2)+'s both';
-  });
-  temp(box, front, dur*1000 + combo.length*800 + 600);
-}
-
-function cornerLoop(){
-  clearTimeout(cornerTimer);
-  if(!live()) return;
-  var slow = MODES[mode].id === 'chill';
-  cornerTimer = setTimeout(function(){
-    cornerShow();
-    cornerLoop();
-  }, slow ? rnd(30000,45000) : rnd(15000,21000));
-}
 
 /* Ajetaanko efektejä juuri nyt? (STILL-tilassa ja taustalla ei.) */
 function live(){ return MODES[mode].min > 0 && !document.hidden; }
@@ -734,13 +685,11 @@ document.addEventListener('visibilitychange', function(){
   if(document.hidden){
     body.classList.add('sleep');
     clearTimeout(timer);
-    clearTimeout(cornerTimer);
     stopBanner();
   }else{
     body.classList.remove('sleep');
     schedule();
     bannerCycle();
-    cornerLoop();
     keepAwake();
   }
 });
@@ -765,13 +714,12 @@ document.addEventListener('click', function(){
 
 /* ---------- Käynnistys ---------- */
 fit();
-zone();
+lanes();
 initBanners();
 applyMode();
 setTimeout(function(){
   toast('Napauta ruutua: HYPE → RAUHA → STILL', 4500);
 }, 900);
-setTimeout(cornerShow, 3500);
 
 if('serviceWorker' in navigator && location.protocol === 'https:'){
   navigator.serviceWorker.register('sw.js').catch(function(){});

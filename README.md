@@ -7,11 +7,25 @@ välkkyy ja yllättää sen verran, että se erottuu festarikansan silmissä.
 Sisältö on sama kuin painetussa hinnastossa: esimerkkimatka, aloitusmaksu,
 minimihinta, kilometrihinta, kiinteä hinta ja yrittäjätiedot.
 
+## Kaksi versiota
+
+Molemmat ovat itsenäisiä, offline-toimivia tiedostoja — avaa kumpi tahansa
+ja vertaa. Sisältö, värit ja menotilat ovat samat, vain koristelu eroaa.
+
+| Versio | Koristelu |
+|---|---|
+| **`index.html`** | Isot emojit oikeassa alanurkassa: nousevat alhaalta, viipyvät hetken ja poistuvat oikealle tai alas. Ei juoksevaa valoreunusta, ei pieniä lentäviä kuvioita. |
+| `versio-lentavat.html` | Aiempi versio: pienet emojit lentävät nopeasti otsikkopalkin ja ekvalisaattorin poikki, ja kyltin ympärillä juoksee valoreunus. |
+
+Jos haluat vanhan version pääversioksi, vaihda tiedostojen nimet keskenään —
+kotivalikon kuvake ja service worker osoittavat aina `index.html`-tiedostoon.
+
 ## Tiedostot
 
 | Tiedosto | Mitä tekee |
 |---|---|
 | `index.html` | Koko näyttö: hinnasto, animaatiot ja logiikka. Ei ulkoisia riippuvuuksia. |
+| `versio-lentavat.html` | Vaihtoehtoinen versio (ks. yllä). |
 | `manifest.json`, `icon.svg` | Kotivalikkoon asennusta varten (kokoruututila). |
 | `sw.js` | Service worker, joka tallentaa sivun offline-käyttöön https-osoitteesta. |
 
@@ -66,8 +80,8 @@ jolloin näyttö siirtyy säädöksen ensimmäisestä sallitusta muodosta toisee
 kontrasti pysyy samana. Hinnaston omia värejä ei muuteta miksikään muuksi
 (aiempi neonefekti on poistettu kokonaan).
 
-Koristeet ovat värillisiä: lentävät emojit ja konfetti eivät ole osa
-hinnastoa vaan liikkuvat sen kaistoilla. Kun muokkaat itse hinnastoa,
+Koristeet ovat värillisiä: nurkkaemojit ja konfetti eivät ole osa
+hinnastoa vaan liikkuvat sen ulkopuolella. Kun muokkaat itse hinnastoa,
 käytä aina `var(--dark)`- ja `var(--bright)`-arvoja.
 
 ## Kädenpuristuskuvake
@@ -104,24 +118,41 @@ automaattisesti lakanan kokoiseksi.
 
 Kaikki yllätykset arvotaan satunnaisesti eivätkä ne koskaan peitä hintoja:
 
-* **Lentävät kuviot** — värillisiä emojeja (🔥💸🎧👑🏆🪩🚕🍕⚡…) lentää
-  otsikkopalkin tai ekvalisaattorin poikki. Lista on `EMOJI`-muuttujassa,
-  ja siihen saa lisätä mitä tahansa.
+* **Nurkkaemojit** — isoja emojipareja (🍕🥤 · 🎧🔥 · 👑💸 · 🕺🪩 · 🍔🍟 …)
+  nousee oikeaan alanurkkaan, viipyy siellä noin 6 sekuntia ja liukuu pois
+  oikealle tai alas. Koko liike kestää 12 s ja on tarkoituksella hidas.
+  Yhdistelmät ovat `COMBOS`-listassa, ja siihen saa lisätä omia.
 * **Leimat** — "MENOKS!", "SKRRT!", "KYYTIIN!" ponnahtavat alareunaan.
 * **Flip** — musta ja keltainen vaihtavat paikkaa. Kontrasti pysyy samana.
 * **Strobo** — sama vaihto nopeasti tahdissa.
 * **Scratch** — koko kyltti nytkähtää kuin levy soittimella.
 * **Boom** — reunat välähtävät ja kyltti pomppaa bassoiskusta.
-* **Konfetti** värillisinä lastuina ja **taksi**, joka ajaa ekvalisaattorin poikki.
+* **Konfetti** värillisinä lastuina.
 
-Efektejä voi kokeilla Safarin konsolista: `__fx.confetti()`, `__fx.flip()` jne.
+Efektejä voi kokeilla Safarin konsolista: `__fx.confetti()`, `__fx.flip()`,
+`__corner()` jne.
+
+## Miten nurkka-alue lasketaan
+
+Emojien alue haetaan ajossa oikeista elementeistä (`zone()`): yläreuna on
+hintarivien alapuolella ja vasen reuna alatunnisteen pisimmän tekstirivin
+oikealla puolella. Tekstin todellinen leveys mitataan `Range`-objektilla,
+koska alatunnisteen rivit ovat koko palkin levyisiä elementtejä.
+
+Emojin piirtoala on isompi kuin sen fonttikoko, ja eri laitteissa eri
+verran, joten ryhmä vielä mitataan lisäyksen jälkeen ja kutistetaan, jos se
+ei mahdu. Siksi emojit eivät voi peittää hintoja tai tekstejä millään
+näyttökoolla. Ekvalisaattorin ja leimojen päälle ne saavat mennä.
+
+Pystyasennossa alatunniste vie lähes koko leveyden, jolloin alue siirtyy
+kyltin alapuolelle ekvalisaattorin päälle ja emojit ovat pienempiä.
 
 ## Miten akku pysyy kasassa
 
 * Animoidaan **vain** `transform`- ja `opacity`-ominaisuuksia, jotka näytönohjain
   hoitaa ilman uudelleenpiirtoa. Ei canvasia, ei `requestAnimationFrame`-silmukkaa,
   ei animoituja varjoja tai sumennuksia.
-* Jatkuvia animaatioita on 26, ja ne kaikki ovat kevyitä siirtoja.
+* Jatkuvia animaatioita on 22, ja ne kaikki ovat kevyitä siirtoja.
   Yllätykset luodaan hetkeksi ja poistetaan DOM:sta heti perään.
 * Musta tausta on OLED-näytöllä selvästi halvempi kuin vaalea.
 * Kun näyttö menee taustalle tai lukkoon, **kaikki animaatiot pysähtyvät**
