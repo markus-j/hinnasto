@@ -43,9 +43,19 @@ toimii sen jälkeen ilman verkkoa.
 3. Jaa-painike → **Lisää Koti-valikkoon**.
 4. Käynnistä kuvakkeesta. Festareilla se toimii ilman nettiä.
 
-**Päivitys kotivalikon versioon:** service worker tarjoilee tallennetun
-version, joten uusi versio tulee käyttöön vasta toisella avauksella verkon
-kanssa — ensimmäinen avaus lataa päivityksen taustalla, toinen näyttää sen.
+**Päivitys kotivalikon versioon:** service worker hakee sivun verkosta ensin
+(enintään 3 s) ja käyttää tallennettua kopiota vain jos verkkoa ei ole. Uusi
+versio näkyy siis heti seuraavalla avauksella, kun nettiä on — ja ilman
+nettiä näyttö toimii yhä tallennetusta kopiosta.
+
+**Kumpi versio ruudulla on?** Käynnistysvinkissä lukee versionumero
+(esim. `· v4`). Vanhassa versiossa numeroa ei ole ja alareunassa pomppivat
+keltaiset ekvalisaattoripalkit.
+
+**Jos vanha versio jää jumiin:** avaa osoite kerran kysymysmerkillä, esim.
+`…/hinnasto/index.html?x=1`. Se ohittaa välimuistin ja kertoo, mitä
+palvelimella oikeasti on. Viimeinen keino: poista kuvake kotivalikosta ja
+lisää uudelleen — se tyhjentää välimuistin kokonaan.
 
 ### Vaihtoehto B — pelkkä tiedosto
 

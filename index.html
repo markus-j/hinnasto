@@ -750,12 +750,16 @@ fit();
 zone();
 initBanners();
 applyMode();
+var VERSION = 'v4';        /* näkyy käynnistysvinkissä: kertoo heti,
+                              onko iPadilla uusin versio vai vanha kopio */
+window.__v = VERSION;      /* sama tieto konsolista: __v */
 setTimeout(function(){
-  toast('Napauta ruutua: HYPE → RAUHA → STILL', 4500);
+  toast('Napauta ruutua: HYPE → RAUHA → STILL  ·  '+VERSION, 4500);
 }, 900);
 setTimeout(cornerShow, 3500);
 
-if('serviceWorker' in navigator && location.protocol === 'https:'){
+if('serviceWorker' in navigator &&
+   (location.protocol === 'https:' || location.hostname === 'localhost')){
   navigator.serviceWorker.register('sw.js').catch(function(){});
 }
 })();
