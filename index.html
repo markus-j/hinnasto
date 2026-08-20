@@ -15,12 +15,13 @@
    Taksin takaikkunan hinnastonäyttö.
    Suunnitteluperiaatteet:
    - Hinnat luettavissa 100 % ajasta: isot emojit pysyvät oikeassa
-     alanurkassa lasketulla alueella (zone()), leimat alareunassa, ja
-     väriefektit vaihtavat vain mustan ja keltaisen paikkaa.
+     alanurkassa lasketulla alueella (zone()), leimat alakaistaleessa,
+     ja väriefektit vaihtavat vain mustan ja keltaisen paikkaa.
    - Akunsäästö: animoidaan vain transform ja opacity (GPU),
      ei JS-ruutusilmukkaa, ei canvasia, ei animoitua blur/shadow-efektiä.
-     Jatkuvia animaatioita on kourallinen; "yllätykset" ajetaan
-     harvakseltaan ajastimella ja poistetaan DOMista jälkikäteen.
+     Jatkuvasti pyöriviä animaatioita ei ole yhtään: kaikki liike on
+     ajastettuja pätkiä, jotka poistetaan DOMista heti perään. Näin
+     näyttö ehtii välillä levätä, mikä on akun kannalta ratkaisevaa.
    - Musta tausta = vähemmän virtaa OLED-näytöllä.
 ------------------------------------------------------------------- */
 
@@ -150,16 +151,12 @@ body{
        padding:0 3.5%;gap:.35em;font-weight:700}
 .legal p{width:100%;font-size:min(3.2vh,3.3vw);line-height:1.15;white-space:nowrap}
 
-/* ============ EKVALISAATTORI (kyltin alla, ei peitä mitään) ============ */
-.eq{position:relative;z-index:2;height:7.5vh;min-height:34px;display:flex;align-items:flex-end;
-    justify-content:center;gap:1.1vmin;padding:0 1vmin}
-.eq i{
-  display:block;flex:1;max-width:4.2vmin;height:100%;
-  background:var(--bright);border-radius:.6vmin .6vmin 0 0;
-  transform-origin:50% 100%;transform:scaleY(.18);
-  animation:eq calc(var(--beat)*2) ease-in-out infinite alternate;
-  will-change:transform;
-}
+/* ============ ALAPALKKI ============
+   Ekvalisaattori on poistettu kokonaan: se oli ainoa jatkuvasti pyörivä
+   animaatio (22 palkkia 60 fps), eli koko näytön lepotilan este.
+   Tyhjä musta kaistale jää tilalle, koska leimat ja nurkkaemojit
+   käyttävät sitä — ilman sitä ne osuisivat alatunnisteen tekstiin. */
+.floor{height:6vh;min-height:26px;flex:none}
 
 /* ============ ETUKERROS ============ */
 .front{position:fixed;inset:0;z-index:5;pointer-events:none;overflow:hidden}
@@ -207,10 +204,6 @@ body{
 .toast.on{opacity:.96}
 
 /* ============ ANIMAATIOT (vain transform / opacity) ============ */
-@keyframes eq{
-  0%{transform:scaleY(.14)}
-  100%{transform:scaleY(1)}
-}
 @keyframes stamp{
   0%{transform:scale(0) rotate(-30deg);opacity:0}
   18%{transform:scale(1.12) rotate(-7deg);opacity:1}
@@ -277,7 +270,6 @@ body.chill{--beat:1.0s}
 body.still *,body.still *::before,body.still *::after{
   animation:none!important;transition:none!important;
 }
-body.still .eq i{transform:scaleY(.5)}
 body.still .front{display:none}
 
 /* Taustavälilehti / näyttö pois: pysäytetään kaikki. */
@@ -288,7 +280,7 @@ body.sleep *,body.sleep *::before,body.sleep *::after{animation-play-state:pause
   /* Sama neljä saraketta, kapeampi mainossarake. fit() kutistaa
      hintatekstit sen verran, että kaikki mahtuu. */
   .rows{grid-template-columns:minmax(0,11%) minmax(0,43%) minmax(0,26%) minmax(0,20%)}
-  .eq{height:6vh}
+  .floor{height:5vh}
 }
 </style>
 </head>
@@ -358,8 +350,8 @@ body.sleep *,body.sleep *::before,body.sleep *::after{animation-play-state:pause
   </div>
 </div>
 
-<!-- Ekvalisaattori kyltin alapuolella -->
-<div class="eq" id="eq" aria-hidden="true"></div>
+<!-- Tyhjä alakaistale: leimojen ja nurkkaemojien tila -->
+<div class="floor" aria-hidden="true"></div>
 
 <!-- Etukerros: lentävät efektit vain hinnattomilla kaistoilla -->
 <div class="front" id="front" aria-hidden="true"></div>
@@ -372,17 +364,7 @@ body.sleep *,body.sleep *::before,body.sleep *::after{animation-play-state:pause
 
 var body    = document.body,
     front   = document.getElementById('front'),
-    eq      = document.getElementById('eq'),
     toastEl = document.getElementById('toast');
-
-/* ---------- Ekvalisaattoripalkit ---------- */
-var BARS = 22;
-for(var i=0;i<BARS;i++){
-  var b=document.createElement('i');
-  b.style.animationDelay   = (-(Math.random()*1.4).toFixed(2))+'s';
-  b.style.animationDuration = 'calc(var(--beat) * '+(1+Math.round(Math.random()*2))+')';
-  eq.appendChild(b);
-}
 
 /* ---------- Automaattinen sovitus ----------
    Kavennetaan tekstiä ryhmittäin, jos se ei mahdu riville. Näin hinnasto

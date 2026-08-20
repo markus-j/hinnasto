@@ -14,8 +14,8 @@ ja vertaa. Sisältö, värit ja menotilat ovat samat, vain koristelu eroaa.
 
 | Versio | Koristelu |
 |---|---|
-| **`index.html`** | Isot emojit oikeassa alanurkassa: nousevat alhaalta, viipyvät hetken ja poistuvat oikealle tai alas. Ei juoksevaa valoreunusta, ei pieniä lentäviä kuvioita. |
-| `versio-lentavat.html` | Aiempi versio: pienet emojit lentävät nopeasti otsikkopalkin ja ekvalisaattorin poikki, ja kyltin ympärillä juoksee valoreunus. |
+| **`index.html`** | Isot emojit oikeassa alanurkassa: nousevat alhaalta, viipyvät hetken ja poistuvat oikealle tai alas. Ei ekvalisaattoria, ei juoksevaa valoreunusta, ei pieniä lentäviä kuvioita. |
+| `versio-lentavat.html` | Aiempi versio: pienet emojit lentävät nopeasti otsikkopalkin ja ekvalisaattorin poikki, kyltin ympärillä juoksee valoreunus ja ekvalisaattori pyörii jatkuvasti. **Kuluttaa selvästi enemmän akkua.** |
 
 Jos haluat vanhan version pääversioksi, vaihda tiedostojen nimet keskenään —
 kotivalikon kuvake ja service worker osoittavat aina `index.html`-tiedostoon.
@@ -43,6 +43,10 @@ toimii sen jälkeen ilman verkkoa.
 3. Jaa-painike → **Lisää Koti-valikkoon**.
 4. Käynnistä kuvakkeesta. Festareilla se toimii ilman nettiä.
 
+**Päivitys kotivalikon versioon:** service worker tarjoilee tallennetun
+version, joten uusi versio tulee käyttöön vasta toisella avauksella verkon
+kanssa — ensimmäinen avaus lataa päivityksen taustalla, toinen näyttää sen.
+
 ### Vaihtoehto B — pelkkä tiedosto
 
 Kopioi `index.html` iPadin Tiedostot-sovellukseen (AirDrop, iCloud, sähköposti)
@@ -64,9 +68,12 @@ Napautus vaihtaa tilaa, valinta muistetaan seuraavallakin käynnistyksellä:
 
 | Tila | Mitä tapahtuu | Akku |
 |---|---|---|
-| **HYPE** | Täysi meno: yllätys 7–15 s välein. | ~ |
-| **RAUHA** | Hitaampi syke, yllätys 25–50 s välein. | vähemmän |
+| **HYPE** | Täysi meno: yllätys 7–15 s välein, nurkkaemojit 15–21 s välein. | ~ |
+| **RAUHA** | Yllätys 25–50 s välein, nurkkaemojit 30–45 s välein. | selvästi vähemmän |
 | **STILL** | Kaikki animaatiot pois, pelkkä hinnasto. | vähiten |
+
+Jos akun pitää riittää yli 10 tuntia, **RAUHA** on oikea valinta: ruutu on
+silloin liikkumatta suurimman osan ajasta.
 
 ## Värit
 
@@ -129,6 +136,8 @@ Kaikki yllätykset arvotaan satunnaisesti eivätkä ne koskaan peitä hintoja:
 * **Boom** — reunat välähtävät ja kyltti pomppaa bassoiskusta.
 * **Konfetti** värillisinä lastuina.
 
+Ekvalisaattoripalkit on poistettu kokonaan akunkeston vuoksi (ks. alla).
+
 Efektejä voi kokeilla Safarin konsolista: `__fx.confetti()`, `__fx.flip()`,
 `__corner()` jne.
 
@@ -142,22 +151,30 @@ koska alatunnisteen rivit ovat koko palkin levyisiä elementtejä.
 Emojin piirtoala on isompi kuin sen fonttikoko, ja eri laitteissa eri
 verran, joten ryhmä vielä mitataan lisäyksen jälkeen ja kutistetaan, jos se
 ei mahdu. Siksi emojit eivät voi peittää hintoja tai tekstejä millään
-näyttökoolla. Ekvalisaattorin ja leimojen päälle ne saavat mennä.
+näyttökoolla. Leimojen päälle ne saavat mennä.
 
 Pystyasennossa alatunniste vie lähes koko leveyden, jolloin alue siirtyy
-kyltin alapuolelle ekvalisaattorin päälle ja emojit ovat pienempiä.
+kyltin alapuolelle tyhjään alakaistaleeseen ja emojit ovat pienempiä.
 
 ## Miten akku pysyy kasassa
 
 * Animoidaan **vain** `transform`- ja `opacity`-ominaisuuksia, jotka näytönohjain
   hoitaa ilman uudelleenpiirtoa. Ei canvasia, ei `requestAnimationFrame`-silmukkaa,
   ei animoituja varjoja tai sumennuksia.
-* Jatkuvia animaatioita on 22, ja ne kaikki ovat kevyitä siirtoja.
-  Yllätykset luodaan hetkeksi ja poistetaan DOM:sta heti perään.
+* **Jatkuvasti pyöriviä animaatioita ei ole yhtään.** Ekvalisaattori
+  poistettiin juuri tästä syystä: sen 22 palkkia olivat ainoa lakkaamatta
+  pyörivä animaatio, ja niin kauan kuin ruudulla liikkuu jokin, näytön ja
+  näytönohjaimen putki ei pääse lepäämään hetkeksikään. Nyt kaikki liike on
+  ajastettuja pätkiä, jotka poistetaan DOM:sta heti perään.
 * Musta tausta on OLED-näytöllä selvästi halvempi kuin vaalea.
 * Kun näyttö menee taustalle tai lukkoon, **kaikki animaatiot pysähtyvät**
   automaattisesti (`visibilitychange`).
 * **STILL**-tila pysäyttää kaiken, jos akku alkaa loppua kesken illan.
+
+Mitattua: pelkkä still-kuva Kuvat-sovelluksessa kesti n. 14 h, animoitu
+versio ekvalisaattorin kanssa n. 8 h. Näytön kirkkaus on koodista
+riippumaton ja usein suurin yksittäinen tekijä — kannattaa laskea se niin
+alas kuin ikkunanäytössä vielä erottuu.
 
 ## Sisällön muuttaminen
 
